@@ -1,19 +1,23 @@
-﻿using MyShop.Core.Models;
-using MyShop.DataAccess.InMemory;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using MyShop.Core.Models;
+using MyShop.Core.ViewModels;
+using MyShop.DataAccess.InMemory;
 
 namespace MyShop.WebUI.Controllers
 {
     public class ProductManagerController : Controller
     {
         ProductRepository context;
+        ProductCategoryRepository productCategories;
+
         public ProductManagerController()
         {
             context = new ProductRepository();
+            productCategories = new ProductCategoryRepository();
         }
         // GET: ProductManager
         public ActionResult Index()
@@ -21,18 +25,18 @@ namespace MyShop.WebUI.Controllers
             List<Product> products = context.Collection().ToList();
             return View(products);
         }
-
         public ActionResult Create()
         {
-            Product product = new Product();
-            return View(product);
-        }
+            ProductManagerViewModel viewModel = new ProductManagerViewModel();
 
-        // override method 
-        [HttpPost]  // Action verb: To create a new resource.
+            viewModel.Product = new Product();
+            viewModel.ProductCategories = productCategories.Collection();
+            return View(viewModel);
+        }
+        [HttpPost]
         public ActionResult Create(Product product)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return View(product);
             }
@@ -41,26 +45,25 @@ namespace MyShop.WebUI.Controllers
                 context.Insert(product);
                 context.Commit();
                 return RedirectToAction("Index");
-            }         
-            
-        }
 
+            }
+        }
         public ActionResult Edit(string Id)
         {
             Product product = context.Find(Id);
-            if(product == null)
+            if (product == null)
             {
                 return HttpNotFound();
             }
             else
             {
-                return View(product);
+                ProductManagerViewModel viewModel = new ProductManagerViewModel();
+                viewModel.Product = product;
+                viewModel.ProductCategories = productCategories.Collection();
+                return View(viewModel);
             }
         }
-
-        // override method 
-        [HttpPost]  // Action verb: To create a new resource.
-
+        [HttpPost]
         public ActionResult Edit(Product product, string Id)
         {
             Product productToEdit = context.Find(Id);
@@ -74,21 +77,20 @@ namespace MyShop.WebUI.Controllers
                 {
                     return View(product);
                 }
-                
-                productToEdit.Catagory = product.Catagory;
+                productToEdit.Category = product.Category;
                 productToEdit.Description = product.Description;
                 productToEdit.Image = product.Image;
                 productToEdit.Name = product.Name;
                 productToEdit.Price = product.Price;
+
                 context.Commit();
                 return RedirectToAction("Index");
             }
-            
         }
-
         public ActionResult Delete(string Id)
         {
             Product productToDelete = context.Find(Id);
+
             if (productToDelete == null)
             {
                 return HttpNotFound();
@@ -98,12 +100,8 @@ namespace MyShop.WebUI.Controllers
                 return View(productToDelete);
             }
         }
-
-
-        // override method 
-        [HttpPost]  // Action verb: To create a new resource.
-        [ActionName("Delete")] //mapping for the routing system; URL that includes /Delete/for a POST request will find ConfirmDelete method.
-
+        [HttpPost]
+        [ActionName("Delete")]
         public ActionResult ConfirmDelete(string Id)
         {
             Product productToDelete = context.Find(Id);
@@ -115,11 +113,8 @@ namespace MyShop.WebUI.Controllers
             {
                 context.Delete(Id);
                 context.Commit();
-
                 return RedirectToAction("Index");
             }
         }
-
     }
-
 }
