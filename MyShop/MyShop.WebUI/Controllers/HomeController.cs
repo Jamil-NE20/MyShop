@@ -19,6 +19,8 @@ namespace MyShop.WebUI.Controllers
             context = productContext;
             productCategories = productCategoryContext;
         }
+
+        [HandleError]  // Action method level filter
         public ActionResult Index()
         {
             List<Product> products = context.Collection().ToList();
