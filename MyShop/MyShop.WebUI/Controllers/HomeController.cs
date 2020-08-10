@@ -1,4 +1,5 @@
-﻿using MyShop.Core.Contracts;
+﻿using Microsoft.Build.Framework.XamlTypes;
+using MyShop.Core.Contracts;
 using MyShop.Core.Models;
 using System;
 using System.Collections.Generic;
@@ -27,6 +28,26 @@ namespace MyShop.WebUI.Controllers
             return View(products);
         }
 
+        public ActionResult AddCategory()
+        {
+            IQueryable<ProductCategory> queryable = productCategories.Collection();
+            productCategories = queryable;
+            return View(productCategories);
+        }
+
+        public ActionResult UpdateCaterogy(string Id)
+        {
+            Product product = context.Find(Id);
+            if (product == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                return View();
+            }
+           
+        }
 
         public ActionResult Details(string Id)
         {

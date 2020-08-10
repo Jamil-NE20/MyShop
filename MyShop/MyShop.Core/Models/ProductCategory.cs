@@ -11,5 +11,10 @@ namespace MyShop.Core.Models
     {
         public string Category { get; set; }
 
+
+        public static object Collection()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
