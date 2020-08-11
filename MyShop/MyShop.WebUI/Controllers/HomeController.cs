@@ -1,6 +1,8 @@
-﻿using Microsoft.Build.Framework.XamlTypes;
+﻿
+using Microsoft.Build.Framework.XamlTypes;
 using MyShop.Core.Contracts;
 using MyShop.Core.Models;
+using MyShop.Core.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,34 +23,29 @@ namespace MyShop.WebUI.Controllers
             productCategories = productCategoryContext;
         }
 
-        [HandleError]  // Action method level filter
-        public ActionResult Index()
+       
+        public ActionResult Index(string Category = null)
         {
-            List<Product> products = context.Collection().ToList();
-            return View(products);
-        }
-
-        public ActionResult AddCategory()
-        {
-            IQueryable<ProductCategory> queryable = productCategories.Collection();
-            productCategories = queryable;
-            return View(productCategories);
-        }
-
-        public ActionResult UpdateCaterogy(string Id)
-        {
-            Product product = context.Find(Id);
-            if (product == null)
+            List<Product> products;
+            List<ProductCategory> categories = productCategories.Collection().ToList();
+            if (Category == null)
             {
-                return HttpNotFound();
+                products = context.Collection().ToList();
             }
             else
             {
-                return View();
+                products = context.Collection().Where(p => p.Category == Category).ToList();
             }
-           
+
+            ProductListViewModel model = new ProductListViewModel();
+            model.Products = products;
+            model.ProductCategories = categories;
+
+            return View(model);
+
         }
 
+        
         public ActionResult Details(string Id)
         {
             Product product = context.Find(Id);
