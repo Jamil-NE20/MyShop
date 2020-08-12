@@ -31,11 +31,12 @@
                 @Html.DisplayFor(model => model.Price)
             </dd>
             <dt></dt>
-            <dd> <a href="#" class="btn btn-default">Add To Basket</a></dd>
-            @Html.ActionLink("Back to List", "Index")
+            <dd> <a href="@Url.Action("AddToBasket", "Basket", new { Id=Model.Id})" class="btn btn-default">Add To Basket</a></dd>
+            <dt></dt>
+           <dd> @Html.ActionLink("Back to List", "Index") </dd>
         </dl>
     </div>
-    <div class="col-md-12 clearfix"></div>
-
+    
 </div>
+<div class="col-md-12 clearfix"></div>
 
